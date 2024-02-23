@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users</title>
+  <!-- Bootstrap CSS ekleyin -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>Kullanıcılar</h1>
+    <ul class="list-group">
+      <% users.forEach(user => { %>
+        <li class="list-group-item">
+          <span class="font-weight-bold">Email:</span> <%= user.email %>, 
+          <span class="font-weight-bold">Role:</span> <%= user.roleId.name %>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+
+  <!-- Bootstrap JS ve Popper.js ekleyin -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

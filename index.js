@@ -6,12 +6,17 @@ const session = require('express-session');
 
 
 const app = express();
-const PORT = 4000;
+const PORT = 5000;
 
 // MongoDB bağlantısı
-mongoose.connect('mongodb://localhost:27017/manyToOne', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+// mongoose.connect('mongodb://localhost:27017/manyToOne', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+//Atlas
+mongoose.connect('mongodb+srv://ssinem06:198402@cluster0.ypcz8d2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+useNewUrlParser: true,
+useUnifiedTopology: true,
 });
 
 // User ve Role modellerini oluştur
@@ -24,7 +29,18 @@ const userSchema = new mongoose.Schema({
 const roleSchema = new mongoose.Schema({
   name: String,
 });
-
+const bookShema=new mongoose.Schema({
+   name:String,
+   ISBN:String,
+   yazar:String,
+   sayfaSayisi:Number,
+   kitapSayisi:Number
+});
+const borroweBookShema=new mongoose.Schema({
+   barkodNo:String,
+   userId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
+   bookId:{type:mongoose.Schema.Types.ObjectId,ref:'Book'}
+});
 
 // Kullanıcı oluşturulmadan önce şifreyi hash'le
 userSchema.pre('save', async function (next) {
@@ -47,6 +63,9 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema);
 const Role = mongoose.model('Role', roleSchema);
+const Book=mongoose.model('Book',bookShema);
+const BorroweBookShema=mongoose.model('BorrowedBook',borroweBookShema);
+
 
 // Express middleware
 app.use(express.json());
@@ -222,6 +241,19 @@ app.post('/login', async (req, res) => {
 
 // GET /admin endpoint'i - Admin sayfasını göster
 app.get('/admin', (req, res) => {
+
+  // Kullanıcı oturumu kontrolü
+  if (!req.session.user) {
+    // Eğer oturum açılmamışsa veya kullanıcı bilgisi yoksa login sayfasına yönlendir
+    return res.redirect('/login');
+  }
+
+  // Kullanıcı rolü kontrolü
+  const userRole = req.session.user.roleId && req.session.user.roleId.name;
+  if (userRole !== 'Admin') {
+    // Eğer kullanıcı rolü 'Admin' değilse erişim reddedildi sayfasına yönlendir
+    return res.render('accessDenied');
+  }
   res.render('admin/admin'); // views klasörü içindeki admin.ejs sayfasını render eder
 });
 
